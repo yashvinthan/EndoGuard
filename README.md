@@ -4,12 +4,12 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/endoguard/endoguard?style=flat)](https://hub.docker.com/r/endoguard/endoguard/)
 
 <p align="center">
-    <a href="https://www.endoguard.io/" target="_blank">
-        <img src="https://www.endoguard.io/firstscreen.jpg" alt="endoguard screenshot" />
+    <a href="https://www.endoguard.online/" target="_blank">
+        <img src="https://www.endoguard.online/firstscreen.jpg" alt="endoguard screenshot" />
     </a>
 </p>
 
-[endoguard](https://www.endoguard.io) is an open-source security framework.
+[endoguard](https://www.endoguard.online) is an open-source security framework.
 
 endoguard helps understand, monitor, and protect your product from threats, fraud, and abuse. While classic cybersecurity focuses on infrastructure and network perimeter, most breaches occur through compromised accounts and application logic abuse that bypasses firewalls, SIEM, WAFs, and other defenses. endoguard detects threats where they actually happen: inside your product.
 
@@ -57,7 +57,7 @@ endoguard is a hand-written, few-dependency, "low-tech" PHP/PostgreSQL applicati
 
 ## Live demo
 
-Check out the live demo at [play.endoguard.io](https://play.endoguard.io) (*admin/endoguard*).
+Check out the live demo at [play.endoguard.online](https://play.endoguard.online) (*admin/endoguard*).
 
 ## Requirements
 
@@ -76,12 +76,12 @@ Check out the live demo at [play.endoguard.io](https://play.endoguard.io) (*admi
 To run endoguard within a Docker container you may use command below:
 
 ```bash
-curl -sL endoguard.io/t.yml | docker compose -f - up -d
+curl -sL endoguard.online/t.yml | docker compose -f - up -d
 ```
 Continue with step 4 of [Quickstart](#quickstart-install).
 
 ## Quickstart install
-1. [Download](https://www.endoguard.io/download/) the latest version of endoguard (ZIP file).
+1. [Download](https://www.endoguard.online/download/) the latest version of endoguard (ZIP file).
 2. Extract the endoguard-master.zip file to the location where you want it installed on your web server.
 3. Navigate to `http://localhost:8585/install/index.php` in a browser to launch the installation process.
 4. After the successful installation, delete the `install/` directory and its contents.
@@ -119,11 +119,11 @@ composer require endoguard/endoguard
   
 ## Documentation
 
-See the [User guide](https://docs.endoguard.io/) for details on how to use EndoGuard, [Developers documentation](https://github.com/endoguardtechnologies/DEVELOPMENT.md) to customize your integration, [Admin documentation](https://github.com/endoguardtechnologies/ADMIN.md) for installation, maintenance and updates.
+See the [User guide](https://docs.endoguard.online/) for details on how to use EndoGuard, [Developers documentation](https://github.com/endoguardtechnologies/DEVELOPMENT.md) to customize your integration, [Admin documentation](https://github.com/endoguardtechnologies/ADMIN.md) for installation, maintenance and updates.
 
 ## About
 
-endoguard is an [open-source security framework](https://www.endoguard.io) that embeds protection against threats, fraud, and abuse right into your product.
+endoguard is an [open-source security framework](https://www.endoguard.online) that embeds protection against threats, fraud, and abuse right into your product.
 
 The project started as a proprietary system in 2021 and was open-sourced (AGPL) in December 2024.
 
@@ -139,19 +139,19 @@ The endoguard wordmark stands behind the horizon line, as a metaphor of the endl
 
 ## Links
 
-* [Website](https://www.endoguard.io)
-* [Live demo](https://play.endoguard.io)
+* [Website](https://www.endoguard.online)
+* [Live demo](https://play.endoguard.online)
 * [Admin documentation](https://github.com/endoguardtechnologies/ADMIN.md)
 * [Developers documentation](https://github.com/endoguardtechnologies/DEVELOPMENT.md)
-* [Resource center](https://www.endoguard.io/bat/)
+* [Resource center](https://www.endoguard.online/bat/)
 * [Docker Hub](https://hub.docker.com/r/endoguard/endoguard)
-* [User guide](https://docs.endoguard.io)
+* [User guide](https://docs.endoguard.online)
 * [Packagist](https://packagist.org/packages/endoguard/endoguard)
-* [Mattermost community](https://chat.endoguard.io)
+* [Mattermost community](https://chat.endoguard.online)
   
 ## Reporting a security issue
 
-If you've found a security-related issue with endoguard, please email security@endoguard.io. Submitting the issue on GitHub exposes the vulnerability to the public, making it easy to exploit. We will publicly disclose the security issue after it has been resolved.
+If you've found a security-related issue with endoguard, please email security@endoguard.online. Submitting the issue on GitHub exposes the vulnerability to the public, making it easy to exploit. We will publicly disclose the security issue after it has been resolved.
 
 After receiving a report, endoguard will take the following steps:
 

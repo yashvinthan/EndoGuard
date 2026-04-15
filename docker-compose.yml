@@ -10,7 +10,7 @@ services:
       - SITE=localhost:8585
       - FORCE_HTTPS=false
       - PEPPER=ea89748b61e2f9f8ed5f3400d43702a829e2f693
-      - ENRICHMENT_API=https://api.endoguard.io
+      - ENRICHMENT_API=https://api.endoguard.online
     depends_on:
       - db
 

@@ -1,9 +1,9 @@
 {
     "name": "EndoGuard",
     "description": "Embedded & Internal Cybersecurity Framework. Understand, monitor, and protect your application from within.",
-    "website": "https://www.endoguard.io",
+    "website": "https://www.endoguard.online",
     "repository": "https://github.com/endoguardtechnologies/endoguard",
-    "logo": "https://www.endoguard.io/logo-public.png",
+    "logo": "https://www.endoguard.online/logo-public.png",
     "keywords": [
         "endoguard",
         "cybersecurity",

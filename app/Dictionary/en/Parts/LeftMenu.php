@@ -2,15 +2,15 @@
 
 /**
  * EndoGuard ~ Embedded & Internal security framework
- * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.online)
  *
  * Licensed under GNU Affero General Public License version 3 of the or any later version.
  * For full copyright and license information, please see the LICENSE
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.online)
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link          https://www.endoguard.io endoguard(tm)
+ * @link          https://www.endoguard.online endoguard(tm)
  */
 
 declare(strict_types=1);
@@ -39,7 +39,7 @@ return [
     'LeftMenu_blacklist_link' => 'Blacklist',
     'LeftMenu_logbook_link' => 'Logbook',
     'LeftMenu_admin_docs_link' => 'Admin docs',
-    'LeftMenu_admin_docs_link_url' => 'https://www.endoguard.io/admin-docs.php',
+    'LeftMenu_admin_docs_link_url' => 'https://www.endoguard.online/admin-docs.php',
     'LeftMenu_dev_docs_link' => 'Developer docs',
-    'LeftMenu_dev_docs_link_url' => 'https://www.endoguard.io/dev-docs.php',
+    'LeftMenu_dev_docs_link_url' => 'https://www.endoguard.online/dev-docs.php',
 ];

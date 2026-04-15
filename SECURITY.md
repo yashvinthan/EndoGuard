@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you've found a security-related issue with endoguard, please email security@endoguard.io. Submitting to GitHub makes the vulnerability public, making it easy to exploit. We'll do a public disclosure of the security issue once it's been fixed.
+If you've found a security-related issue with endoguard, please email security@endoguard.online. Submitting to GitHub makes the vulnerability public, making it easy to exploit. We'll do a public disclosure of the security issue once it's been fixed.
 
 After receiving a report, endoguard will take the following steps:
 

@@ -13,12 +13,12 @@
         "application-monitoring"
     ],
     "license": "AGPL-3.0+",
-    "homepage": "https://www.endoguard.io",
+    "homepage": "https://www.endoguard.online",
     "authors": [
         {
             "name": "EndoGuard Security",
-            "email": "team@endoguard.io",
-            "homepage": "https://www.endoguard.io/"
+            "email": "team@endoguard.online",
+            "homepage": "https://www.endoguard.online/"
         }
     ],
     "config": {
