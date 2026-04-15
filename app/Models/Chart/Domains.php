@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * EndoGuard ~ Embedded & Internal security framework
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ *
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.endoguard.io endoguard(tm)
+ */
+
+declare(strict_types=1);
+
+namespace EndoGuard\Models\Chart;
+
+class Domains extends Base {
+    protected ?string $DB_TABLE_NAME = 'event';
+
+    public function getData(int $apiKey): array {
+        $field1 = 'unique_domains_count';
+        $data1 = $this->getFirstLine($apiKey);
+
+        $field2 = 'ts_new_domains';
+        $data2 = $this->getSecondLine($apiKey);
+
+        $data0 = $this->concatDataLines($data1, $field1, $data2, $field2);
+
+        $indexedData    = array_values($data0);
+        $timestamps     = array_column($indexedData, 'ts');
+        $line1          = array_column($indexedData, $field1);
+        $line2          = array_column($indexedData, $field2);
+
+        return $this->addEmptyDays([$timestamps, $line1, $line2]);
+    }
+
+    private function getFirstLine(int $apiKey): array {
+        $query = (
+            'SELECT
+                EXTRACT(EPOCH FROM date_trunc(:resolution, event.time + :offset))::bigint AS ts,
+                COUNT(DISTINCT event_email.domain) AS unique_domains_count
+            FROM
+                event
+
+            INNER JOIN event_email
+            ON (event.email = event_email.id)
+
+            WHERE
+                event.key = :api_key AND
+                event.time >= :start_time AND
+                event.time <= :end_time
+
+            GROUP BY ts
+            ORDER BY ts'
+        );
+
+        return $this->execute($query, $apiKey);
+    }
+
+    private function getSecondLine(int $apiKey): array {
+        $query = (
+            'SELECT
+                EXTRACT(EPOCH FROM date_trunc(:resolution, event_domain.created + :offset))::bigint AS ts,
+                COUNT(event_domain.id) AS ts_new_domains
+            FROM
+                event_domain
+
+            WHERE
+                event_domain.key = :api_key AND
+                event_domain.created >= :start_time AND
+                event_domain.created <= :end_time
+
+            GROUP BY ts
+            ORDER BY ts'
+        );
+
+        return $this->execute($query, $apiKey);
+    }
+}

@@ -1,0 +1,39 @@
+import {BasePage} from './Base.js?v=2';
+
+import {DatesFilter} from '../parts/DatesFilter.js?v=2';
+import {SearchFilter} from '../parts/SearchFilter.js?v=2';
+import {IspsChart} from '../parts/chart/Isps.js?v=2';
+import {IspsGrid} from '../parts/grid/Isps.js?v=2';
+
+export class IspsPage extends BasePage {
+    constructor() {
+        super('isps');
+    }
+
+    initUi() {
+        const datesFilter  = new DatesFilter();
+        const searchFilter = new SearchFilter();
+
+        this.setBaseFilters(datesFilter, searchFilter);
+
+        const gridParams = {
+            url:        `${window.app_base}/admin/loadIsps`,
+            tileId:     'totalIsps',
+            tableId:    'isps-table',
+
+            dateRangeGrid:      true,
+            calculateTotals:    true,
+            totals: {
+                type: 'isp',
+                columns: ['total_visit', 'total_account', 'total_ip'],
+            },
+
+            getParams: this.getParamsSection,
+        };
+
+        const chartParams = this.getChartParams(datesFilter, searchFilter);
+
+        new IspsChart(chartParams);
+        new IspsGrid(gridParams);
+    }
+}

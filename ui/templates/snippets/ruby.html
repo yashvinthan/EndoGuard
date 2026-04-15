@@ -1,0 +1,72 @@
+<span class="kwd">require</span> <span class="pct">'</span><span class="str">net/http</span><span class="pct">'</span>
+<span class="kwd">require</span> <span class="pct">'</span><span class="str">uri</span><span class="pct">'</span>
+<span class="kwd">require</span> <span class="pct">'</span><span class="str">cgi</span><span class="pct">'</span>
+<span class="kwd">require</span> <span class="pct">'</span><span class="str">json</span><span class="pct">'</span>
+<span class="var">url</span> <span class="opr">=</span> <span class="cls">URI</span><span class="acc">.</span><span class="sfn">parse</span><span class="brc">(</span><span class="pct">'</span><span class="str">{{ @apiUrl }}</span><span class="pct">'</span><span class="brc">)</span>  <span class="cmt"># sensor URL</span>
+<span class="var">headers</span> <span class="opr">=</span> <span class="brc">{</span>
+    <span class="pct">'</span><span class="str">Content-Type</span><span class="pct">'</span> <span class="opr">=&gt;</span> <span class="pct">'</span><span class="str">application/x-www-form-urlencoded</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="pct">'</span><span class="str">Api-Key</span><span class="pct">'</span> <span class="opr">=&gt;</span> <span class="pct">'</span><span class="str">{{ @apiKey }}</span><span class="pct">'</span> <span class="cmt"># Tracking ID</span>
+<span class="brc">}</span>
+<span class="cmt"># Replace each key value with actual info</span>
+<span class="var">data</span> <span class="opr">=</span> <span class="brc">{</span>
+    <span class="cmt">########### Required fields ###########</span>
+    <span class="cmt"># Unique value that allows identification of a user. Ex: alice54 (string)</span>
+    <span class="pct">'</span><span class="str">userName</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User email (string)</span>
+    <span class="pct">'</span><span class="str">emailAddress</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User IP address (string)</span>
+    <span class="pct">'</span><span class="str">ipAddress</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># URL path of visited page (string)</span>
+    <span class="pct">'</span><span class="str">url</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User-agent of user request (string)</span>
+    <span class="pct">'</span><span class="str">userAgent</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Event UTC timestamp ('Y-m-d H:i:s.v' string)</span>
+    <span class="pct">'</span><span class="str">eventTime</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">########### Optional fields ###########</span>
+    <span class="cmt"># User first name (string)</span>
+    <span class="pct">'</span><span class="str">firstName</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User last name (string)</span>
+    <span class="pct">'</span><span class="str">lastName</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User full name (string)</span>
+    <span class="pct">'</span><span class="str">fullName</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Title of visited page (string)</span>
+    <span class="pct">'</span><span class="str">pageTitle</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User phone number (string)</span>
+    <span class="pct">'</span><span class="str">phoneNumber</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Referer of visited page (string)</span>
+    <span class="pct">'</span><span class="str">httpReferer</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Status code for page visit (string)</span>
+    <span class="pct">'</span><span class="str">httpCode</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User browser language (string)</span>
+    <span class="pct">'</span><span class="str">browserLanguage</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Type of user action from event types list (string)</span>
+    <span class="cmt"># For ex. 'page_view', 'field_edit', etc.</span>
+    <span class="pct">'</span><span class="str">eventType</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Type of HTTP request from list (string)</span>
+    <span class="pct">'</span><span class="str">httpMethod</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># User created UTC timestamp ('Y-m-d H:i:s' string)</span>
+    <span class="pct">'</span><span class="str">userCreated</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt"># Payload, must have `page_search` or `account_email_change` event type (array)</span>
+    <span class="pct">'</span><span class="str">payload</span><span class="pct">'</span><span class="opr">:</span> <span class="brc">[</span><span class="brc">]</span><span class="sep">,</span>
+    <span class="cmt"># Field history, must have `field_edit` event type (array)</span>
+    <span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span><span class="opr">:</span> <span class="brc">[</span>
+        <span class="brc">{</span>
+            <span class="pct">'</span><span class="str">field_name</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>   <span class="cmt"># Name of the field</span>
+            <span class="pct">'</span><span class="str">field_id</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>     <span class="cmt"># ID of the field</span>
+            <span class="pct">'</span><span class="str">new_value</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>    <span class="cmt"># Field new value</span>
+            <span class="pct">'</span><span class="str">old_value</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>    <span class="cmt"># Field old value</span>
+            <span class="pct">'</span><span class="str">parent_id</span><span class="pct">'</span><span class="opr">:</span> <span class="pct">'</span><span class="pct">'</span>     <span class="cmt"># ID of the field parent</span>
+        <span class="brc">}</span>
+    <span class="brc">]</span>
+<span class="brc">}</span>
+<span class="kwd">if</span> <span class="var">data</span><span class="acc">.</span><span class="sfn">key?</span><span class="brc">(</span><span class="pct">'</span><span class="str">payload</span><span class="pct">'</span><span class="brc">)</span> <span class="opr">&amp;&amp;</span> <span class="opr">!</span><span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">payload</span><span class="pct">'</span><span class="brc">]</span><span class="acc">.</span><span class="sfn">nil?</span>
+  <span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">payload</span><span class="pct">'</span><span class="brc">]</span> <span class="opr">=</span> <span class="cls">JSON</span><span class="acc">.</span><span class="sfn">generate</span><span class="brc">(</span><span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">payload</span><span class="pct">'</span><span class="brc">]</span><span class="brc">)</span>
+<span class="kwd">end</span>
+<span class="kwd">if</span> <span class="var">data</span><span class="acc">.</span><span class="sfn">key?</span><span class="brc">(</span><span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span><span class="brc">)</span> <span class="opr">&amp;&amp;</span> <span class="opr">!</span><span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span><span class="brc">]</span><span class="acc">.</span><span class="sfn">nil?</span>
+  <span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span><span class="brc">]</span> <span class="opr">=</span> <span class="cls">JSON</span><span class="acc">.</span><span class="sfn">generate</span><span class="brc">(</span><span class="var">data</span><span class="brc">[</span><span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span><span class="brc">]</span><span class="brc">)</span>
+<span class="kwd">end</span>
+<span class="var">http</span> <span class="opr">=</span> <span class="cls">Net</span><span class="acc">::</span><span class="cls">HTTP</span><span class="acc">.</span><span class="sfn">new</span><span class="brc">(</span><span class="var">url</span><span class="acc">.</span><span class="sfn">host</span><span class="sep">,</span> <span class="var">url</span><span class="acc">.</span><span class="sfn">port</span><span class="brc">)</span>
+<span class="var">http</span><span class="acc">.</span><span class="var">use_ssl</span> <span class="opr">=</span> <span class="con">true</span> <span class="kwd">if</span> <span class="var">url</span><span class="acc">.</span><span class="sfn">scheme</span> <span class="opr">==</span> <span class="pct">'</span><span class="str">https</span><span class="pct">'</span>
+<span class="var">request</span> <span class="opr">=</span> <span class="cls">Net</span><span class="acc">::</span><span class="cls">HTTP</span><span class="acc">::</span><span class="cls">Post</span><span class="acc">.</span><span class="sfn">new</span><span class="brc">(</span><span class="var">url</span><span class="sep">,</span> <span class="var">headers</span><span class="brc">)</span>
+<span class="var">request</span><span class="acc">.</span><span class="var">body</span> <span class="opr">=</span> <span class="cls">URI</span><span class="acc">.</span><span class="sfn">encode_www_form</span><span class="brc">(</span><span class="var">data</span><span class="brc">)</span>
+<span class="var">response</span> <span class="opr">=</span> <span class="var">http</span><span class="acc">.</span><span class="sfn">request</span><span class="brc">(</span><span class="var">request</span><span class="brc">)</span>

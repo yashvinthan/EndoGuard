@@ -1,0 +1,132 @@
+<?php
+
+/**
+ * EndoGuard ~ Embedded & Internal security framework
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ *
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.endoguard.io endoguard(tm)
+ */
+
+declare(strict_types=1);
+
+namespace EndoGuard\Models\Grid\Logbook;
+
+class Query extends \EndoGuard\Models\Grid\Base\Query {
+    protected ?string $defaultOrder = 'event_logbook.error_type DESC, event_logbook.id DESC';
+    protected string $dateRangeField = 'event_logbook.started';
+
+    protected array $allowedColumns = ['ip', 'started', 'endpoint', 'error_type', 'error_text', 'created'];
+
+    public function getData(): array {
+        $queryParams = $this->getQueryParams();
+
+        $query = (
+            'SELECT
+                event_logbook.id,
+                event_logbook.ip,
+                event_logbook.endpoint,
+                event_logbook.error_type,
+                event_logbook.error_text,
+                event_logbook.raw,
+                event_logbook.started           AS created,
+                event_logbook.started           AS server_time,
+                event_error_type.name           AS error_name,
+                event_error_type.value          AS error_value
+
+            FROM
+                event_logbook
+
+            LEFT JOIN event_error_type
+            ON (event_logbook.error_type = event_error_type.id)
+
+            WHERE
+                event_logbook.key = :api_key
+                %s'
+        );
+
+        $this->applySearch($query, $queryParams);
+        $this->applyOrder($query);
+        $this->applyLimit($query, $queryParams);
+
+        return [$query, $queryParams];
+    }
+
+    public function getTotal(): array {
+        $queryParams = $this->getQueryParams();
+
+        $query = (
+            'SELECT
+                COUNT(event_logbook.id) AS count
+
+            FROM
+                event_logbook
+
+            LEFT JOIN event_error_type
+            ON (event_logbook.error_type = event_error_type.id)
+
+            WHERE
+                event_logbook.key = :api_key
+                %s'
+        );
+
+        $this->applySearch($query, $queryParams);
+
+        return [$query, $queryParams];
+    }
+
+    private function applySearch(string &$query, array &$queryParams): void {
+        //Add dates into request
+        $this->applyDateRange($query, $queryParams);
+
+        $search = \EndoGuard\Utils\Conversion::getDictionaryRequestParam('search');
+        $searchConditions = '';
+
+        if (isset($search['value']) && is_string($search['value']) && $search['value'] !== '') {
+            $extra = '';
+            if (\EndoGuard\Utils\Conversion::filterIp($search['value'])) {
+                $extra = ' event_logbook.ip = :search_ip_value OR ';
+                $queryParams[':search_ip_value'] = $search['value'];
+            }
+
+            $searchConditions .= (
+                " AND
+                (
+                    $extra
+                    LOWER(event_logbook.raw::text)      LIKE LOWER(:search_value) OR
+                    LOWER(event_logbook.endpoint::text) LIKE LOWER(:search_value) OR
+                    LOWER(event_logbook.error_text)     LIKE LOWER(:search_value) OR
+                    LOWER(event_error_type.name)        LIKE LOWER(:search_value)
+                )"
+            );
+
+            $queryParams[':search_value'] = '%' . $search['value'] . '%';
+        }
+
+        //Add search and ids into request
+        $query = sprintf($query, $searchConditions);
+    }
+
+    protected function applyDateRange(string &$query, array &$queryParams): void {
+        // apply server offset to utc requested date range because dateRangeField is in server time zone
+        $serverOffset = \EndoGuard\Utils\Timezones::getServerOffset();
+        $dateRange = \EndoGuard\Utils\DateRange::getDatesRangeFromRequest($serverOffset);
+
+        if ($dateRange) {
+            $searchConditions = (
+                " AND {$this->dateRangeField} >= :start_time AND
+                {$this->dateRangeField} <= :end_time
+                %s"
+            );
+
+            $query = sprintf($query, $searchConditions);
+            $queryParams[':end_time'] = $dateRange['endDate'];
+            $queryParams[':start_time'] = $dateRange['startDate'];
+        }
+    }
+}

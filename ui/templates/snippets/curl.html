@@ -1,0 +1,23 @@
+<span class="sfn">curl</span> <span class="opr">-</span><span class="var">X</span> <span class="var">POST</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">userName=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">ipAddress=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">url=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">userAgent=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">eventTime=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">emailAddress=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">firstName=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">lastName=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">fullName=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">pageTitle=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">phoneNumber=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">httpReferer=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">httpCode=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">browserLanguage=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">eventType=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">httpMethod=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">userCreated=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">payload=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">d</span> <span class="pct">'</span><span class="str">fieldHistory=</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">H</span> <span class="pct">'</span><span class="str">Api-Key: {{ @apiKey }}</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="opr">-</span><span class="var">H</span> <span class="pct">'</span><span class="str">Content-Type: application/x-www-form-urlencoded</span><span class="pct">'</span> <span class="opr">\</span>
+    <span class="str">{{ @apiUrl }}</span>

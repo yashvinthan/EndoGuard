@@ -1,0 +1,47 @@
+import {BasePage} from './Base.js?v=2';
+
+import {DatesFilter} from '../parts/DatesFilter.js?v=2';
+import {SearchFilter} from '../parts/SearchFilter.js?v=2';
+import {EntityTypeFilter} from '../parts/choices/EntityTypeFilter.js?v=2';
+import {BlacklistGridActionButtons} from '../parts/BlacklistGridActionButtons.js?v=2';
+import {BlacklistChart} from '../parts/chart/Blacklist.js?v=2';
+import {BlacklistGrid} from '../parts/grid/Blacklist.js?v=2';
+
+export class BlacklistPage extends BasePage {
+    constructor() {
+        super('blacklist');
+    }
+
+    initUi() {
+        this.tableId = 'blacklist-table';
+
+        const datesFilter       = new DatesFilter();
+        const searchFilter      = new SearchFilter();
+
+        this.setBaseFilters(datesFilter, searchFilter);
+
+        const gridParams = {
+            url:            `${window.app_base}/admin/loadBlacklist`,
+            tileId:         'totalBlacklist',
+            tableId:        'blacklist-table',
+
+            dateRangeGrid:  true,
+
+            getParams: this.getParamsSection,
+        };
+
+        if (document.getElementById('entity-type-selectors')) {
+            const entityTypeFilter  = new EntityTypeFilter();
+
+            gridParams.choicesFilterEvents = [entityTypeFilter.getEventType()];
+
+            this.filters.entityTypeIds = entityTypeFilter;
+        }
+
+        const chartParams = this.getChartParams(datesFilter, searchFilter);
+
+        new BlacklistChart(chartParams);
+        new BlacklistGrid(gridParams);
+        new BlacklistGridActionButtons(this.tableId);
+    }
+}

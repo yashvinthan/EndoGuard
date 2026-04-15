@@ -1,0 +1,58 @@
+import {BasePage} from './Base.js?v=2';
+
+import {EventsChart} from '../parts/chart/Events.js?v=2';
+import {DatesFilter} from '../parts/DatesFilter.js?v=2';
+import {SearchFilter} from '../parts/SearchFilter.js?v=2';
+import {EventTypeFilter} from '../parts/choices/EventTypeFilter.js?v=2';
+import {DeviceTypeFilter} from '../parts/choices/DeviceTypeFilter.js?v=2';
+import {RulesFilter} from '../parts/choices/RulesFilter.js?v=2';
+import {EventPanel} from '../parts/panel/EventPanel.js?v=2';
+import {EventsGrid} from '../parts/grid/Events.js?v=2';
+
+export class EventsPage extends BasePage {
+    constructor() {
+        super('events');
+    }
+
+    initUi() {
+        const datesFilter       = new DatesFilter();
+        const searchFilter      = new SearchFilter();
+        const eventTypeFilter   = new EventTypeFilter();
+        const deviceTypeFilter  = new DeviceTypeFilter();
+        const rulesFilter       = new RulesFilter();
+
+        const chartParams = this.getChartParams(datesFilter, searchFilter);
+
+        this.filters = {
+            dateRange:      datesFilter,
+            searchValue:    searchFilter,
+            eventTypeIds:   eventTypeFilter,
+            ruleUids:       rulesFilter,
+            deviceTypes:    deviceTypeFilter,
+        };
+
+        const gridParams = {
+            url:            `${window.app_base}/admin/loadEvents`,
+            tileId:         'totalEvents',
+            tableId:        'user-events-table',
+            panelType:      'event',
+            dateRangeGrid:  true,
+
+            sessionGroup:   true,
+            singleUser:     false,
+            isSortable:     true,
+
+            choicesFilterEvents: [
+                eventTypeFilter.getEventType(),
+                rulesFilter.getEventType(),
+                deviceTypeFilter.getEventType(),
+            ],
+
+            getParams: this.getParamsSection,
+        };
+
+        new EventPanel();
+        new EventsChart(chartParams);
+        new EventsGrid(gridParams);
+    }
+}

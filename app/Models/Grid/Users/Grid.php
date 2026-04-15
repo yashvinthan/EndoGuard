@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * EndoGuard ~ Embedded & Internal security framework
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ *
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.endoguard.io endoguard(tm)
+ */
+
+declare(strict_types=1);
+
+namespace EndoGuard\Models\Grid\Users;
+
+class Grid extends \EndoGuard\Models\Grid\Base\Grid {
+    public function __construct(int $apiKey) {
+        parent::__construct();
+
+        $this->apiKey = $apiKey;
+        $this->idsModel = new Ids($apiKey);
+        $this->queryModel = new Query($apiKey);
+    }
+
+    public function getUsersByIpId(int $ipId): array {
+        $params = [':ip_id' => $ipId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByIpId(), $params);
+    }
+
+    public function getUsersByIspId(int $ispId): array {
+        $params = [':isp_id' => $ispId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByIspId(), $params);
+    }
+
+    public function getUsersByDomainId(int $domainId): array {
+        $params = [':domain_id' => $domainId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByDomainId(), $params);
+    }
+
+    public function getUsersByCountryId(int $countryId): array {
+        $params = [':country_id' => $countryId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByCountryId(), $params);
+    }
+
+    public function getUsersByDeviceId(int $deviceId): array {
+        $params = [':device_id' => $deviceId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByDeviceId(), $params);
+    }
+
+    public function getUsersByResourceId(int $resourceId): array {
+        $params = [':resource_id' => $resourceId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByResourceId(), $params);
+    }
+
+    public function getUsersByFieldId(int $fieldId): array {
+        $params = [':field_id' => $fieldId];
+
+        return $this->getGrid($this->idsModel->getUsersIdsByFieldId(), $params);
+    }
+
+    public function getAll(): array {
+        return $this->getGrid();
+    }
+
+    protected function convertTimeToUserTimezone(array &$result): void {
+        $fields = ['time', 'lastseen', 'latest_decision', 'created', 'score_updated_at'];
+
+        \EndoGuard\Utils\Timezones::translateTimezones($result, $fields);
+    }
+}

@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * EndoGuard ~ Embedded & Internal security framework
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ *
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.endoguard.io endoguard(tm)
+ */
+
+declare(strict_types=1);
+
+namespace EndoGuard\Models\Chart;
+
+class Logbook extends Base {
+    protected ?string $DB_TABLE_NAME = 'event_logbook';
+
+    public function getData(int $apiKey): array {
+        $data = $this->getFirstLine($apiKey);
+
+        $timestamps = array_column($data, 'ts');
+        $line1      = array_column($data, 'event_normal_type_count');
+        $line2      = array_column($data, 'event_issued_type_count');
+        $line3      = array_column($data, 'event_failed_type_count');
+
+        return $this->addEmptyDays([$timestamps, $line1, $line2, $line3]);
+    }
+
+    private function getFirstLine(int $apiKey): array {
+        // apply server offset to utc requested date range because dateRangeField is in server time zone
+        $serverOffset = \EndoGuard\Utils\Timezones::getServerOffset();
+        $dateRange = \EndoGuard\Utils\DateRange::getDatesRangeFromRequest($serverOffset);
+
+        if (!$dateRange) {
+            $dateRange = [
+                'endDate'   => date('Y-m-d H:i:s', time() + $serverOffset),
+                'startDate' => date('Y-m-d H:i:s', $serverOffset),
+            ];
+        }
+
+        //$dateRange['endDate']   = \EndoGuard\Utils\Timezones::localizeForActiveOperator($dateRange['endDate']);
+        //$dateRange['startDate'] = \EndoGuard\Utils\Timezones::localizeForActiveOperator($dateRange['startDate']);
+
+        $params = [
+            ':api_key'      => $apiKey,
+            ':end_time'     => $dateRange['endDate'],
+            ':start_time'   => $dateRange['startDate'],
+            ':resolution'   => \EndoGuard\Utils\DateRange::getResolutionFromRequest(),
+            ':comb_offset'  => strval(\EndoGuard\Utils\Timezones::getCurrentOperatorOffset() - $serverOffset),
+        ];
+
+        [$failedTypesParams, $failedFlatIds]    = $this->getArrayPlaceholders(\EndoGuard\Utils\Constants::get()->FAILED_LOGBOOK_EVENT_TYPES, 'failed');
+        [$issuedTypesParams, $issuedFlatIds]    = $this->getArrayPlaceholders(\EndoGuard\Utils\Constants::get()->ISSUED_LOGBOOK_EVENT_TYPES, 'issued');
+        [$normalTypesParams, $normalFlatIds]    = $this->getArrayPlaceholders(\EndoGuard\Utils\Constants::get()->NORMAL_LOGBOOK_EVENT_TYPES, 'normal');
+
+        $params = array_merge($params, $failedTypesParams);
+        $params = array_merge($params, $issuedTypesParams);
+        $params = array_merge($params, $normalTypesParams);
+
+        // use shift as substraction of server offset and addition of operator offset
+        $query = (
+            "SELECT
+                EXTRACT(EPOCH FROM date_trunc(:resolution, event_logbook.started + :comb_offset))::bigint AS ts,
+                COUNT(CASE WHEN event_error_type.value IN ({$normalFlatIds}) THEN TRUE END) AS event_normal_type_count,
+                COUNT(CASE WHEN event_error_type.value IN ({$issuedFlatIds}) THEN TRUE END) AS event_issued_type_count,
+                COUNT(CASE WHEN event_error_type.value IN ({$failedFlatIds}) THEN TRUE END) AS event_failed_type_count
+
+            FROM
+                event_logbook
+
+            LEFT JOIN event_error_type
+            ON event_logbook.error_type = event_error_type.id
+
+            WHERE
+                event_logbook.key = :api_key AND
+                event_logbook.started >= :start_time AND
+                event_logbook.started <= :end_time
+
+            GROUP BY ts
+            ORDER BY ts"
+        );
+
+        return $this->execQuery($query, $params);
+    }
+}

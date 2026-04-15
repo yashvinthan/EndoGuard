@@ -1,0 +1,78 @@
+<span class="var">&lt;?php</span>
+<span class="cmt">// Set the Tracking ID for sending events</span>
+<span class="pct">$</span><span class="var">apiKey</span> <span class="opr">=</span> <span class="pct">'</span><span class="str">{{ @apiKey }}</span><span class="pct">'</span><span class="sep">;</span> <span class="cmt">// Tracking ID</span>
+<span class="cmt">// Replace each key value with actual info</span>
+<span class="pct">$</span><span class="var">data</span> <span class="opr">=</span> <span class="typ">array</span><span class="brc">(</span>
+    <span class="cmt">/////////// Required fields ///////////</span>
+    <span class="cmt">// Unique value that allows identification of a user. Ex: alice54 (string)</span>
+    <span class="pct">'</span><span class="str">userName</span><span class="pct">'</span>        <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User IP address (string)</span>
+    <span class="pct">'</span><span class="str">ipAddress</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// URL path of visited page (string)</span>
+    <span class="pct">'</span><span class="str">url</span><span class="pct">'</span>             <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User-agent of user request (string)</span>
+    <span class="pct">'</span><span class="str">userAgent</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Event UTC timestamp ('Y-m-d H:i:s.v' string)</span>
+    <span class="pct">'</span><span class="str">eventTime</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">/////////// Optional fields ///////////</span>
+    <span class="cmt">// User email (string)</span>
+    <span class="pct">'</span><span class="str">emailAddress</span><span class="pct">'</span>    <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User first name (string)</span>
+    <span class="pct">'</span><span class="str">firstName</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User last name (string)</span>
+    <span class="pct">'</span><span class="str">lastName</span><span class="pct">'</span>        <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User full name (string)</span>
+    <span class="pct">'</span><span class="str">fullName</span><span class="pct">'</span>        <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Title of visited page (string)</span>
+    <span class="pct">'</span><span class="str">pageTitle</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User phone number (string)</span>
+    <span class="pct">'</span><span class="str">phoneNumber</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Referer of visited page (string)</span>
+    <span class="pct">'</span><span class="str">httpReferer</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Status code for page visit (string)</span>
+    <span class="pct">'</span><span class="str">httpCode</span><span class="pct">'</span>        <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User browser language (string)</span>
+    <span class="pct">'</span><span class="str">browserLanguage</span><span class="pct">'</span> <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Type of user action from event types list (string)</span>
+    <span class="cmt">// For ex. 'page_view', 'field_edit', etc.</span>
+    <span class="pct">'</span><span class="str">eventType</span><span class="pct">'</span>       <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Type of HTTP request from list (string)</span>
+    <span class="pct">'</span><span class="str">httpMethod</span><span class="pct">'</span>      <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// User created UTC timestamp ('Y-m-d H:i:s' string)</span>
+    <span class="pct">'</span><span class="str">userCreated</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cmt">// Payload, must have `page_search` or `account_email_change` event type (array)</span>
+    <span class="pct">'</span><span class="str">payload</span><span class="pct">'</span>         <span class="opr">=&gt;</span> <span class="brc">[</span><span class="brc">]</span><span class="sep">,</span>
+    <span class="cmt">// Field history, must have `field_edit` event type (array)</span>
+    <span class="pct">'</span><span class="str">fieldHistory</span><span class="pct">'</span>    <span class="opr">=&gt;</span> <span class="brc">[</span>
+        <span class="brc">[</span>
+            <span class="pct">'</span><span class="str">field_name</span><span class="pct">'</span>    <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>      <span class="cmt">// Name of the field</span>
+            <span class="pct">'</span><span class="str">field_id</span><span class="pct">'</span>      <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>      <span class="cmt">// ID of the field</span>
+            <span class="pct">'</span><span class="str">new_value</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>      <span class="cmt">// Field new value</span>
+            <span class="pct">'</span><span class="str">old_value</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span><span class="sep">,</span>      <span class="cmt">// Field old value</span>
+            <span class="pct">'</span><span class="str">parent_id</span><span class="pct">'</span>     <span class="opr">=&gt;</span> <span class="pct">'</span><span class="pct">'</span>       <span class="cmt">// ID of the field parent</span>
+        <span class="brc">]</span>
+    <span class="brc">]</span><span class="sep">,</span>
+<span class="brc">)</span><span class="sep">;</span>
+<span class="cmt">// Convert the event data to a query string</span>
+<span class="pct">$</span><span class="var">dataString</span> <span class="opr">=</span> <span class="sfn">http_build_query</span><span class="brc">(</span><span class="pct">$</span><span class="var">data</span><span class="brc">)</span><span class="sep">;</span>
+<span class="cmt">// Set up apiKey</span>
+<span class="pct">$</span><span class="var">headers</span> <span class="opr">=</span> <span class="brc">[</span>
+    <span class="pct">'</span><span class="str">Api-Key: </span><span class="pct">'</span> <span class="opr">.</span> <span class="pct">$</span><span class="var">apiKey</span><span class="sep">,</span>
+    <span class="pct">'</span><span class="str">Content-Type: application/x-www-form-urlencoded</span><span class="pct">'</span><span class="sep">,</span>
+<span class="brc">]</span><span class="sep">;</span>
+<span class="cmt">// Create a curl request to send the event data to the API</span>
+<span class="pct">$</span><span class="var">ch</span> <span class="opr">=</span> <span class="sfn">curl_init</span><span class="brc">(</span><span class="brc">)</span><span class="sep">;</span>
+<span class="cmt">// CURLOPT_URL value is sensor URL</span>
+<span class="sfn">curl_setopt_array</span><span class="brc">(</span><span class="pct">$</span><span class="var">ch</span><span class="sep">,</span> <span class="typ">array</span><span class="brc">(</span>
+    <span class="cst">CURLOPT_URL</span>            <span class="opr">=&gt;</span> <span class="pct">'</span><span class="str">{{ @apiUrl }}</span><span class="pct">'</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_POST</span>           <span class="opr">=&gt;</span> <span class="con">true</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_POSTFIELDS</span>     <span class="opr">=&gt;</span> <span class="pct">$</span><span class="var">dataString</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_RETURNTRANSFER</span> <span class="opr">=&gt;</span> <span class="con">true</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_SSL_VERIFYPEER</span> <span class="opr">=&gt;</span> <span class="con">false</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_TIMEOUT_MS</span>     <span class="opr">=&gt;</span> <span class="num">1000</span><span class="sep">,</span>
+    <span class="cst">CURLOPT_HTTPHEADER</span>     <span class="opr">=&gt;</span> <span class="pct">$</span><span class="var">headers</span>
+<span class="brc">)</span><span class="brc">)</span><span class="sep">;</span>
+<span class="cmt">// Send the curl request and capture the response</span>
+<span class="pct">$</span><span class="var">response</span> <span class="opr">=</span> <span class="sfn">curl_exec</span><span class="brc">(</span><span class="pct">$</span><span class="var">ch</span><span class="brc">)</span><span class="sep">;</span>
+<span class="cmt">// Close the curl request</span>
+<span class="sfn">curl_close</span><span class="brc">(</span><span class="pct">$</span><span class="var">ch</span><span class="brc">)</span><span class="sep">;</span>

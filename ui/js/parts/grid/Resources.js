@@ -1,0 +1,100 @@
+import {BaseGrid} from './Base.js?v=2';
+import {
+    renderClickableResourceWithoutQuery,
+    renderAuthStatus,
+    renderHttpCode,
+    renderBoolean,
+} from '../DataRenderers.js?v=2';
+
+export class ResourcesGrid extends BaseGrid {
+    get orderConfig() {
+        return [[7, 'desc']];
+    }
+
+    get columnDefs() {
+        const columnDefs = [
+            {
+                className: 'resource-url-col',
+                targets: 0
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 1
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 2
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 3
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 4
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 5
+            },
+            {
+                className: 'resource-cnt-col',
+                targets: 6
+            },
+            {
+                visible: false,
+                targets: 7
+            }
+        ];
+
+        return columnDefs;
+    }
+
+    get columns() {
+        const columns = [
+            {
+                data: 'title',
+                render: (data, type, record) => {
+                    return renderClickableResourceWithoutQuery(record);
+                }
+            },
+            {
+                data: 'http_code',
+                render: (data, type, record) => {
+                    return renderHttpCode(record);
+                }
+            },
+            {
+                data: 'total_account',
+                name: 'total_account',
+                render: this.renderTotalsLoader
+            },
+            {
+                data: 'total_edit',
+                name: 'total_edit',
+                render: this.renderTotalsLoader
+            },
+            {
+                data: 'total_ip',
+                name: 'total_ip',
+                render: this.renderTotalsLoader
+            },
+            {
+                data: 'total_visit',
+                name: 'total_visit',
+                render: this.renderTotalsLoader
+            },
+            {
+                data: 'suspicious',
+                render: renderBoolean,
+                orderable: false
+            },
+            {
+                data: 'id',
+                name: 'id',
+            }
+        ];
+
+        return columns;
+    }
+}

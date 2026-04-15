@@ -1,0 +1,159 @@
+<?php
+
+/**
+ * EndoGuard ~ Embedded & Internal security framework
+ * Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ *
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) EndoGuard Security Sàrl (https://www.endoguard.io)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.endoguard.io endoguard(tm)
+ */
+
+declare(strict_types=1);
+
+namespace EndoGuard\Models\Grid\Users;
+
+class Query extends \EndoGuard\Models\Grid\Base\Query {
+    protected ?string $defaultOrder = 'event_account.id DESC';
+    protected string $dateRangeField = 'event_account.lastseen';
+
+    protected array $allowedColumns = ['score', 'accounttitle', 'firstname', 'lastname', 'created', 'lastseen', 'fraud', 'id'];
+
+    public function getData(): array {
+        $queryParams = $this->getQueryParams();
+
+        $query = (
+            "SELECT
+                TEXT(date_trunc('day', event_account.created)::date) AS created_day,
+
+                event_account.id,
+                event_account.is_important,
+                event_account.id AS accountid,
+                event_account.userid AS accounttitle,
+                event_account.score,
+                event_account.score_updated_at,
+                event_account.created,
+                event_account.fraud,
+                event_account.reviewed,
+                event_account.firstname,
+                event_account.lastname,
+                event_account.lastseen,
+                event_account.total_visit,
+                event_account.total_ip,
+                event_account.total_device,
+                event_account.total_country,
+                event_account.latest_decision,
+                event_account.added_to_review,
+
+                event_email.email,
+                event_email.blockemails
+
+            FROM
+                event_account
+
+            LEFT JOIN event_email
+            ON (event_account.lastemail = event_email.id)
+
+            WHERE
+                event_account.key = :api_key
+                %s"
+        );
+
+        $this->applySearch($query, $queryParams);
+        $this->applyRules($query, $queryParams);
+        $this->applyScore($query, $queryParams);
+        $this->applyOrder($query);
+        $this->applyLimit($query, $queryParams);
+
+        return [$query, $queryParams];
+    }
+
+    public function getTotal(): array {
+        $queryParams = $this->getQueryParams();
+
+        $query = (
+            'SELECT
+                COUNT (event_account.id)
+
+            FROM
+                event_account
+
+            LEFT JOIN event_email
+            ON (event_account.lastemail = event_email.id)
+
+            WHERE
+                event_account.key = :api_key
+                %s'
+        );
+
+        $this->applySearch($query, $queryParams);
+        $this->applyRules($query, $queryParams);
+        $this->applyScore($query, $queryParams);
+
+        return [$query, $queryParams];
+    }
+
+    private function applySearch(string &$query, array &$queryParams): void {
+        $this->applyDateRange($query, $queryParams);
+
+        $search = \EndoGuard\Utils\Conversion::getDictionaryRequestParam('search');
+        $searchConditions = $this->injectIdQuery('event_account.id', $queryParams);
+
+        if (isset($search['value']) && is_string($search['value']) && $search['value'] !== '') {
+            $searchConditions .= (
+                " AND
+                (
+                    LOWER(REPLACE(
+                            COALESCE(event_account.firstname, '') ||
+                            COALESCE(event_account.lastname, '') ||
+                            COALESCE(event_account.firstname, ''),
+                            ' ', '')) LIKE LOWER(REPLACE(:search_value, ' ', '')) OR
+                    LOWER(event_email.email)       LIKE LOWER(:search_value) OR
+                    LOWER(event_account.userid)     LIKE LOWER(:search_value) OR
+
+                    TO_CHAR((event_account.created + :offset)::timestamp without time zone, 'dd/mm/yyyy hh24:mi:ss') LIKE :search_value
+                )"
+            );
+
+            $queryParams[':search_value'] = '%' . $search['value'] . '%';
+            $queryParams[':offset'] = strval(\EndoGuard\Utils\Timezones::getCurrentOperatorOffset());
+        }
+
+        //Add search and ids into request
+        $query = sprintf($query, $searchConditions);
+    }
+
+    private function applyRules(string &$query, array &$queryParams): void {
+        $ruleUids = \EndoGuard\Utils\Conversion::getArrayRequestParam('ruleUids');
+        if (!$ruleUids) {
+            return;
+        }
+
+        $uids = [];
+        foreach ($ruleUids as $ruleUid) {
+            $uids[] = ['uid' => $ruleUid];
+        }
+
+        $query .= ' AND score_details @> (:rules_uids)::jsonb';
+        $queryParams[':rules_uids'] = json_encode($uids);
+    }
+
+    private function applyScore(string &$query, array &$queryParams): void {
+        $scoresRanges = \EndoGuard\Utils\Conversion::getArrayRequestParam('scoresRange');
+        if (!$scoresRanges) {
+            return;
+        }
+
+        $clauses = [];
+        foreach ($scoresRanges as $key => $scoreBase) {
+            $clauses[] = sprintf('event_account.score >= :score_base_%s AND event_account.score <= :score_base_%s + 10', $key, $key);
+            $queryParams[':score_base_' . $key] = \EndoGuard\Utils\Conversion::intValCheckEmpty($scoreBase, 0);
+        }
+
+        $query .= ' AND (' . implode(' OR ', $clauses) . ')';
+    }
+}

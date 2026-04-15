@@ -1,0 +1,16 @@
+<?php
+
+namespace EndoGuard\Rules\Core;
+
+class E03 extends \EndoGuard\Assets\Rule {
+    public const NAME = 'Suspicious words in email';
+    public const DESCRIPTION = 'Email contains word parts that usually found in automatically generated mailboxes.';
+    public const ATTRIBUTES = [];
+
+    protected function defineCondition(): \Ruler\Operator\LogicalOperator {
+        return $this->rb->logicalAnd(
+            $this->rb['le_has_suspicious_str']->equalTo(true),
+            $this->rb['le_local_part_len']->greaterThan(0),
+        );
+    }
+}

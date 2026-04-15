@@ -1,0 +1,44 @@
+{
+    "name": "EndoGuard",
+    "description": "Embedded & Internal Cybersecurity Framework. Understand, monitor, and protect your application from within.",
+    "website": "https://www.endoguard.io",
+    "repository": "https://github.com/endoguardtechnologies/endoguard",
+    "logo": "https://www.endoguard.io/logo-public.png",
+    "keywords": [
+        "endoguard",
+        "cybersecurity",
+        "fraud-detection",
+        "internal-security",
+        "audit-trail"
+    ],
+    "success_url": "/install/index.php?mode=schema",
+    "addons": [
+        {
+            "plan": "heroku-postgresql",
+            "options": {
+                "version": "15"
+            }
+        },
+        {
+            "plan": "scheduler"
+        }
+    ],
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "basic"
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/php"
+        }
+    ],
+    "env": {
+        "FORCE_HTTPS": {
+            "description": "Secure HTTP for SITE variable",
+            "required": true,
+            "value": "True"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+import {BasePopUp} from './BasePopUp.js?v=2';
+
+export class DeleteAccountPopUp extends BasePopUp {
+    constructor() {
+        const formParams = {
+            mainButtonId:       'close-account-btn',
+            confirmButtonId:    'confirm-close-account-button',
+            formId:             'close-account-form',
+            popupId:            'close-account-popup',
+        };
+
+        super(formParams);
+    }
+}

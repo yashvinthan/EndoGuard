@@ -1,0 +1,21 @@
+<?php
+
+namespace EndoGuard\Rules\Core;
+
+class C08 extends \EndoGuard\Assets\Rule {
+    public const NAME = 'South Africa IP address';
+    public const DESCRIPTION = 'IP address located in South Africa. This region is associated with a higher risk.';
+    public const ATTRIBUTES = ['ip'];
+
+    protected function prepareParams(array $params): array {
+        $params['eip_has_specific_country'] = in_array(\EndoGuard\Utils\Constants::get()->COUNTRY_CODE_SOUTH_AFRICA, $params['eip_country_id']);
+
+        return $params;
+    }
+
+    protected function defineCondition(): \Ruler\Operator\LogicalOperator {
+        return $this->rb->logicalAnd(
+            $this->rb['eip_has_specific_country']->equalTo(true),
+        );
+    }
+}

@@ -1,0 +1,16 @@
+<?php
+
+namespace EndoGuard\Rules\Core;
+
+class E05 extends \EndoGuard\Assets\Rule {
+    public const NAME = 'Special characters in email';
+    public const DESCRIPTION = 'The email address features an unusually high number of special characters, which is atypical for standard email addresses.';
+    public const ATTRIBUTES = [];
+
+    protected function defineCondition(): \Ruler\Operator\LogicalOperator {
+        return $this->rb->logicalAnd(
+            $this->rb['le_email_has_consec_s_chars']->equalTo(true),
+            $this->rb['le_local_part_len']->greaterThan(0),
+        );
+    }
+}

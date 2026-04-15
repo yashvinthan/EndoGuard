@@ -1,0 +1,20 @@
+<div class="searchline">
+    <div class="field day-tile tooltip" title="{{ @AdminHome_clock_day_tooltip }}">
+        <input class="input" id="clock-day" placeholder="{{ @clock_day }}" readonly>
+    </div>
+
+    <div class="field time-tile tooltip" title="{{ @AdminHome_clock_time_tooltip }}">
+        <input class="input" id="clock-time" placeholder="{{ @clock_time_his }} {{ @clock_timezone }}" readonly>
+    </div>
+
+    <input type="hidden" id="offset" value="{{ @clock_offset }}">
+
+    <form onsubmit="document.getElementById('auto-complete').focus(); return false;">
+        <input type="hidden" name="token" value="{{ @CSRF }}">
+
+        <div class="field global-search">
+            <input class="input" id="auto-complete" name="search" placeholder="{{ @Welcome_global_search_placeholder }}" autocomplete="off">
+            <div class="text-loader"></div>
+        </div>
+    </form>
+</div>
