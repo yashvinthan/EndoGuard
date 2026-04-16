@@ -38,7 +38,15 @@ class Variables {
     }
 
     public static function getHost(): string {
-        return self::getHosts()[0];
+        $httpHost = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? '';
+
+        if ($httpHost) {
+            return $httpHost;
+        }
+
+        $hosts = self::getHosts();
+
+        return $hosts[0];
     }
 
     public static function getAdminEmail(): ?string {
