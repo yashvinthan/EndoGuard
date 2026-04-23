@@ -93,10 +93,13 @@ $loginUrlId = getInsertId($db, 'event_url', ['url' => '/login', 'title' => 'Logi
 $uaId = getInsertId($db, 'event_ua_parsed', ['ua' => 'Python-urllib/3.10', 'browser_name' => 'Python', 'os_name' => 'Linux', 'key' => $apiKeyId]);
 $devId = getInsertId($db, 'event_device', ['account_id' => $bfUserId, 'key' => $apiKeyId, 'user_agent' => $uaId, 'updated' => date('Y-m-d H:i:s'), 'lastseen' => date('Y-m-d H:i:s'), 'created' => date('Y-m-d H:i:s')]);
 
+$sId = rand(1000, 9999);
+$db->exec("INSERT INTO event_session (id, key, account_id, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW())", [$sId, $apiKeyId, $bfUserId]);
+
 for ($i = 0; $i < 40; $i++) {
     $time = date('Y-m-d H:i:s', strtotime("-$i minutes"));
     $db->exec("INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-    [$apiKeyId, $bfUserId, $bfIpId, $loginUrlId, $devId, rand(1000, 9999), $time, 1, 401, 2]);
+    [$apiKeyId, $bfUserId, $bfIpId, $loginUrlId, $devId, $sId, $time, 1, 401, 2]);
 }
 
 // --- SCENARIO 2: Account Takeover (Multiple Countries) ---
@@ -107,29 +110,35 @@ foreach ($isos as $idx => $iso) {
     $ip = "187.20." . rand(1, 254) . "." . rand(1, 254);
     $ipId = getInsertId($db, 'event_ip', ['ip' => $ip, 'key' => $apiKeyId, 'country' => $countryMap[$iso], 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s')]);
     $time = date('Y-m-d H:i:s', strtotime("-" . ($idx * 2) . " hours"));
+    $sId = rand(10000, 99999);
+    $db->exec("INSERT INTO event_session (id, key, account_id, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW())", [$sId, $apiKeyId, $atoUserId]);
     $db->exec("INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-    [$apiKeyId, $atoUserId, $ipId, $loginUrlId, $devId, rand(1000, 9999), $time, 1, 200, 2]);
+    [$apiKeyId, $atoUserId, $ipId, $loginUrlId, $devId, $sId, $time, 1, 200, 2]);
 }
 
 // --- SCENARIO 3: Data Scraping ---
 echo "Generating Scenario: Data Scraping...\n";
 $scrapIpId = getInsertId($db, 'event_ip', ['ip' => '45.12.33.1', 'key' => $apiKeyId, 'country' => $countryMap['CN'], 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s'), 'vpn' => true]);
+$sId = rand(100000, 999999);
+$db->exec("INSERT INTO event_session (id, key, account_id, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW())", [$sId, $apiKeyId, $bfUserId]);
 for ($i = 0; $i < 60; $i++) {
     $url = "/product/" . rand(1000, 5000);
     $urlId = getInsertId($db, 'event_url', ['url' => $url, 'title' => 'Product Details', 'key' => $apiKeyId, 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s')]);
     $time = date('Y-m-d H:i:s', strtotime("-5 seconds"));
     $db->exec("INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-    [$apiKeyId, $bfUserId, $scrapIpId, $urlId, $devId, rand(1000, 9999), $time, 1, 200, 1]);
+    [$apiKeyId, $bfUserId, $scrapIpId, $urlId, $devId, $sId, $time, 1, 200, 1]);
 }
 
 // --- NORMAL DATA ---
 echo "Seeding general activity...\n";
 $normalUserId = getInsertId($db, 'event_account', ['userid' => 'happy_customer', 'fullname' => 'Regular User', 'key' => $apiKeyId, 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s'), 'score' => 5]);
 $normalIpId = getInsertId($db, 'event_ip', ['ip' => '1.1.1.1', 'key' => $apiKeyId, 'country' => $countryMap['AU'], 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s')]);
+$sId = rand(1000000, 9999999);
+$db->exec("INSERT INTO event_session (id, key, account_id, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW())", [$sId, $apiKeyId, $normalUserId]);
 for ($i = 0; $i < 50; $i++) {
     $time = date('Y-m-d H:i:s', strtotime("-" . rand(1, 10000) . " minutes"));
     $db->exec("INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-    [$apiKeyId, $normalUserId, $normalIpId, $loginUrlId, $devId, rand(1000, 9999), $time, 1, 200, 1]);
+    [$apiKeyId, $normalUserId, $normalIpId, $loginUrlId, $devId, $sId, $time, 1, 200, 1]);
 }
 
 echo "\nDone! Diverse scenarios seeded for API ID: $apiKeyId\n";
