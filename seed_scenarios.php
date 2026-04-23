@@ -123,7 +123,13 @@ $sId = rand(100000, 999999);
 $db->exec("INSERT INTO event_session (id, key, account_id, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW())", [$sId, $apiKeyId, $bfUserId]);
 for ($i = 0; $i < 60; $i++) {
     $url = "/product/" . rand(1000, 5000);
-    $urlId = getInsertId($db, 'event_url', ['url' => $url, 'title' => 'Product Details', 'key' => $apiKeyId, 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s')]);
+    // Check if URL exists first
+    $existing = $db->exec("SELECT id FROM event_url WHERE url = ? AND key = ?", [$url, $apiKeyId]);
+    if ($existing) {
+        $urlId = $existing[0]['id'];
+    } else {
+        $urlId = getInsertId($db, 'event_url', ['url' => $url, 'title' => 'Product Details', 'key' => $apiKeyId, 'lastseen' => date('Y-m-d H:i:s'), 'updated' => date('Y-m-d H:i:s')]);
+    }
     $time = date('Y-m-d H:i:s', strtotime("-5 seconds"));
     $db->exec("INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
     [$apiKeyId, $bfUserId, $scrapIpId, $urlId, $devId, $sId, $time, 1, 200, 1]);
