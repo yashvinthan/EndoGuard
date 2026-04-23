@@ -11,79 +11,23 @@ AddDefaultCharset UTF-8
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# Hard deny for config, hidden files and composer
+# Hard deny for sensitive files
 <FilesMatch "^config(|\.local)\.ini$|^\..*$|^composer\.(json|lock)$">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
-  <IfModule !mod_authz_core.c>
-    Order allow,deny
-  </IfModule>
 </FilesMatch>
-
-# Hard deny for editors files
-<FilesMatch "(^#.*#|\.(bak|conf|dist|in[ci]|log|orig|sh|sql|sw[op])|~)$">
-  <IfModule mod_authz_core.c>
-     Require all denied
-  </IfModule>
-  <IfModule !mod_authz_core.c>
-    Order allow,deny
-  </IfModule>
-</FilesMatch>
-
-DirectoryIndex index.php index.html index.htm
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteBase /
 
-  # Allow rule for ui/images
+  # Allow existing static files (images, css, js)
   RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule (^|/)ui/images/.+\.(jpg|jpeg|png|gif|webp|svg)$ - [L]
+  RewriteRule ^.*$ - [NC,L]
 
-  # Allow rule for css files
-  RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule (^|/)ui/css/[^/]+\.css$ - [L]
-
-  # Allow rule for ui/js files
-  RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule (^|/)ui/js/.+\.(map|css|js)$ - [L,QSA]
-
-  # Allow rule for file search in controller
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule (^|/)ui/js/.+\.(map|css|js)$ index.php [L,QSA]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule (^|/)ui/css/[^/]+\.css$ index.php [L,QSA]
-
-  # Allow rule for sensor
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule (^|/)sensor/(|index\.php)$ - [L,QSA]
-
-  # Allow rule for installer
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule (^|/)install/(|index\.php)$ - [L,QSA]
-
-  # Deny rule for app directories
-  RewriteCond %{REQUEST_URI} (^|/)(assets|app|sensor|config|tmp|libs|vendor|ui|extension|tests|coverage|.github)($|/.*$) [NC,OR]
-
-  # Deny rule for markdown and other software documents
-  RewriteCond %{REQUEST_URI} (^|/)(README|CHANGELOG|LICENSE|AUTHORS|CODE_OF_CONDUCT|LEGALNOTICE|RELEASE_NOTES|SECURITY|FILE_ID)(|\.txt|\.md|\.diz|\.DIZ)$ [NC,OR]
-
-  # Deny rule for hidden files
-  RewriteCond %{REQUEST_URI} (^|/)\..*$ [NC,OR]
-
-  # Deny rule for docker if any
-  RewriteCond %{REQUEST_URI} (^|/)(docker|Docker).*$ [NC,OR]
-
-  # Deny rule for app specific files in root config files
-  RewriteCond %{REQUEST_URI} (^|/)(app\.json|composer\.json|composer\.lock|cron.json|eslint.config.js|phpcs.xml|phpunit.xml|phpstan.neon)$ [NC]
-
-  RewriteRule ^.*$ - [F,L]
-
+  # Route everything else to index.php
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-
-  # Default for all other requests
-  RewriteRule ^ index.php [L,QSA]
+  RewriteRule ^(.*)$ index.php [L,QSA]
 </IfModule>
