@@ -65,7 +65,7 @@ DirectoryIndex index.php index.html index.htm
   RewriteRule (^|/)install/(|index\.php)$ - [L,QSA]
 
   # Deny rule for app directories
-  RewriteCond %{REQUEST_URI} (^|/)(assets|app|sensor|config|tmp|libs|install|vendor|ui|extension|tests|coverage|.github)($|/.*$) [NC,OR]
+  RewriteCond %{REQUEST_URI} (^|/)(assets|app|sensor|config|tmp|libs|vendor|ui|extension|tests|coverage|.github)($|/.*$) [NC,OR]
 
   # Deny rule for markdown and other software documents
   RewriteCond %{REQUEST_URI} (^|/)(README|CHANGELOG|LICENSE|AUTHORS|CODE_OF_CONDUCT|LEGALNOTICE|RELEASE_NOTES|SECURITY|FILE_ID)(|\.txt|\.md|\.diz|\.DIZ)$ [NC,OR]
