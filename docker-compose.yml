@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -16,6 +17,7 @@ services:
 
   db:
     image: postgres:15-alpine
+    restart: always
     environment:
       - POSTGRES_USER=endoguard
       - POSTGRES_PASSWORD=endoguard
