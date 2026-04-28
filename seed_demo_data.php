@@ -84,7 +84,10 @@ $ispData = [
 ];
 $ispIds = [];
 foreach ($ispData as $isp) {
-    $res = $db->exec("INSERT INTO event_isp (name, asn, key, updated) VALUES (?, ?, ?, NOW()) RETURNING id", [$isp[0], $isp[1], $apiKey]);
+    $res = $db->exec(
+        "INSERT INTO event_isp (name, asn, key, lastseen, created, updated) VALUES (?, ?, ?, NOW(), NOW(), NOW()) RETURNING id",
+        [$isp[0], $isp[1], $apiKey]
+    );
     $ispIds[] = $res[0]['id'];
 }
 
@@ -264,5 +267,30 @@ for ($i = 0; $i < 5000; $i++) {
         );
     }
 }
+
+echo "Updating ISP activity totals...\n";
+$db->exec(
+    "UPDATE event_isp
+     SET
+        lastseen = COALESCE(sub.lastseen, event_isp.lastseen, NOW()),
+        total_visit = COALESCE(sub.total_visit, 0),
+        total_ip = COALESCE(sub.total_ip, 0),
+        total_account = COALESCE(sub.total_account, 0),
+        updated = COALESCE(sub.lastseen, event_isp.lastseen, NOW())
+     FROM (
+        SELECT
+            event_ip.isp,
+            MAX(event.time) AS lastseen,
+            COUNT(*) AS total_visit,
+            COUNT(DISTINCT event_ip.id) AS total_ip,
+            COUNT(DISTINCT event.account) AS total_account
+        FROM event
+        INNER JOIN event_ip ON event.ip = event_ip.id
+        WHERE event.key = ?
+        GROUP BY event_ip.isp
+     ) AS sub
+     WHERE event_isp.id = sub.isp AND event_isp.key = ?",
+    [$apiKey, $apiKey]
+);
 
 echo "Successfully seeded massive robust demo data for API ID: $apiKey\n";
