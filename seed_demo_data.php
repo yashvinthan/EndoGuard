@@ -68,7 +68,7 @@ $ispData = [
     ['Ocn Ntt Docomo Business,Inc.', 4713], ['Dnic Asblk 00721 00726', 721], ['Level3', 3356],
     ['Cogent 174', 174], ['Asn Ibsnaz Telecom Italia S.P.A.', 3269], 
     ['Chinamobile Cn China Mobile Communications Group...', 9808], ['Local Area Network', 0],
-    ['As3215 Orange S.A.', 3215], ['Apple Engineering', 714], ['N/A', 0]
+    ['As3215 Orange S.A.', 3215], ['Apple Engineering', 714], ['N/A', -1]
 ];
 $ispIds = [];
 foreach ($ispData as $isp) {
