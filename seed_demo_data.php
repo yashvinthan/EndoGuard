@@ -61,14 +61,14 @@ foreach ($countries as $c) {
 
 // ISPs (From Screenshot)
 $ispData = [
-    ['Dnic As 00749', '749'], ['Amazon 02', '16509'], ['Chinanet Backbone No.31,Jin Rong Street', '4134'],
-    ['Att Internet4', '7018'], ['Comcast 7922', '7922'], ['Microsoft Corp Msn As Block', '8075'],
-    ['China169 Backbone China Unicom China169 Backbone', '4837'], ['Kixs As Kr Korea Telecom', '4766'],
-    ['Uunet', '701'], ['Dtag Deutsche Telekom Ag', '3320'], ['Gigainfra Softbank Corp.', '17676'],
-    ['Ocn Ntt Docomo Business,Inc.', '4713'], ['Dnic Asblk 00721 00726', '721'], ['Level3', '3356'],
-    ['Cogent 174', '174'], ['Asn Ibsnaz Telecom Italia S.P.A.', '3269'], 
-    ['Chinamobile Cn China Mobile Communications Group...', '9808'], ['Local Area Network', 'LAN'],
-    ['As3215 Orange S.A.', '3215'], ['Apple Engineering', '714'], ['N/A', 'N/A']
+    ['Dnic As 00749', 749], ['Amazon 02', 16509], ['Chinanet Backbone No.31,Jin Rong Street', 4134],
+    ['Att Internet4', 7018], ['Comcast 7922', 7922], ['Microsoft Corp Msn As Block', 8075],
+    ['China169 Backbone China Unicom China169 Backbone', 4837], ['Kixs As Kr Korea Telecom', 4766],
+    ['Uunet', 701], ['Dtag Deutsche Telekom Ag', 3320], ['Gigainfra Softbank Corp.', 17676],
+    ['Ocn Ntt Docomo Business,Inc.', 4713], ['Dnic Asblk 00721 00726', 721], ['Level3', 3356],
+    ['Cogent 174', 174], ['Asn Ibsnaz Telecom Italia S.P.A.', 3269], 
+    ['Chinamobile Cn China Mobile Communications Group...', 9808], ['Local Area Network', 0],
+    ['As3215 Orange S.A.', 3215], ['Apple Engineering', 714], ['N/A', 0]
 ];
 $ispIds = [];
 foreach ($ispData as $isp) {
