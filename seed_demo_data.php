@@ -246,7 +246,7 @@ for ($i = 0; $i < 5000; $i++) {
     if ($i % 2 == 0) {
         $fId = $fieldIds[array_rand($fieldIds)];
         $db->exec(
-            "INSERT INTO event_field_audit_trail (account_id, key, field_id, event_id, old_value, new_value, time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO event_field_audit_trail (account_id, key, field_id, event_id, old_value, new_value, created) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [$uId, $apiKey, $fId, $eventId, 'Old Value', 'New Value', $time]
         );
     }
