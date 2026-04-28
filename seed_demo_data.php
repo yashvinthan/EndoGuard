@@ -52,6 +52,18 @@ $apiKey = 1;
 
 echo "Seeding massive diverse dataset...\n";
 
+$eventTypes = $db->exec('SELECT id, value FROM event_type ORDER BY id');
+$eventTypeIds = [];
+$eventTypeByValue = [];
+foreach ($eventTypes as $eventType) {
+    $eventTypeIds[] = (int)$eventType['id'];
+    $eventTypeByValue[$eventType['value']] = (int)$eventType['id'];
+}
+if (!$eventTypeIds) {
+    die("No event types found in event_type\n");
+}
+$fieldEditEventType = $eventTypeByValue['field_edit'] ?? null;
+
 // Countries (From Screenshot)
 $countries = $db->exec('SELECT id, iso FROM countries WHERE iso IN (\'AR\', \'AU\', \'AT\', \'BH\', \'BE\', \'BO\', \'BR\', \'BG\', \'CA\', \'CL\', \'CN\', \'CR\', \'CI\', \'CZ\', \'EG\', \'FR\', \'DE\', \'GH\')');
 $countryMap = [];
@@ -233,8 +245,9 @@ for ($i = 0; $i < 5000; $i++) {
     }
     $time = date('Y-m-d H:i:s', strtotime("-$eventMins minutes"));
     
-    // In EndoGuard, Event Types map to integers. We use rand(1, 15) to hit things like Page View, Field Edit, Registration, Page Error
-    $type = rand(1, 15);
+    // Event types are constrained by event_type, so pick from the database instead of assuming a numeric range.
+    $hasFieldAuditTrail = $fieldEditEventType !== null && $i % 2 == 0;
+    $type = $hasFieldAuditTrail ? $fieldEditEventType : $eventTypeIds[array_rand($eventTypeIds)];
     
     $eventRes = $db->exec(
         "INSERT INTO event (key, account, ip, url, device, session_id, time, type, http_code, http_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
@@ -243,7 +256,7 @@ for ($i = 0; $i < 5000; $i++) {
     $eventId = $eventRes[0]['id'];
     
     // If it's a Field Edit, record the audit trail
-    if ($i % 2 == 0) {
+    if ($hasFieldAuditTrail) {
         $fId = $fieldIds[array_rand($fieldIds)];
         $db->exec(
             "INSERT INTO event_field_audit_trail (account_id, key, field_id, event_id, old_value, new_value, created) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -253,4 +266,3 @@ for ($i = 0; $i < 5000; $i++) {
 }
 
 echo "Successfully seeded massive robust demo data for API ID: $apiKey\n";
-
